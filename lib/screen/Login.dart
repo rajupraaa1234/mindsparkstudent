@@ -1,5 +1,12 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mindsparkstudent/Utils/DataBase/database_helper.dart';
+import 'package:mindsparkstudent/Utils/Util.dart';
+import 'package:mindsparkstudent/models/User.dart';
+import 'package:mindsparkstudent/screen/HomeScreen.dart';
+import 'package:mindsparkstudent/screen/SignUpScreen.dart';
 
 void main() {
   runApp(const HomePage());
@@ -75,6 +82,52 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  var username = TextEditingController();
+  var password = TextEditingController();
+  DatabaseHelper databaseHelper = DatabaseHelper();
+  User? currUser;
+
+
+  Future<void> onLogin() async {
+    print("asdasd");
+    String user = username.text.toString();
+    String pass = password.text.toString();
+    if(user.length==0 || pass.length==0){
+      Util.showSnackBar(context, "Please enter your credentials...");
+      return;
+    }else if(user.length<3 || pass.length<3){
+      Util.showSnackBar(context, "Please valid credentials...");
+      return;
+    }else {
+      await databaseHelper.checkUserCredential(user,pass).then((value) =>
+          setState(() {
+            if(value == null){
+              //print("str-----> ${value}");
+              this.currUser = null;
+            }else{
+              print("str-----> ${value!['username'] as String}");
+              this.currUser = new User(value!['username'] as String, value!['password'] as String);
+            }
+          })
+      );
+
+      if(this.currUser ==null){
+        Util.showSnackBar(context, "Invalid credential");
+        return;
+      }else if(this.currUser!=null){
+        Util.showSnackBar(context, "user login   sdsds successfully");
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder:
+        (context) =>
+            HomeScreen()));
+      }else{
+        User Nuser = new User(user, pass);
+        databaseHelper.insertNote(Nuser).then((value) =>
+            Util.showSnackBar(context, "New Credential created successfully ...")
+        ).catchError((error)=>Util.showSnackBar(context, "Something is wrong ..."));
+      }
+    }
+  }
   @override
   Widget build(BuildContext context) {
 
@@ -84,6 +137,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
+
     return Scaffold(
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -102,6 +156,7 @@ class _MyHomePageState extends State<MyHomePage> {
             margin: EdgeInsets.only(left: 20,right: 20,top: 30),
             height: 50,
             child: TextField(
+              controller: username,
               textAlign: TextAlign.center,
               decoration: InputDecoration(
                 hintText: 'username',
@@ -127,6 +182,7 @@ class _MyHomePageState extends State<MyHomePage> {
             margin: EdgeInsets.only(left: 20,right: 20,top: 15),
             height: 50,
             child: TextField(
+              controller: password,
               textAlign: TextAlign.center,
               obscureText: true,
               decoration: InputDecoration(
@@ -149,25 +205,39 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
           ),
-          Container(
-            margin: EdgeInsets.only(left: 20,right: 20,top: 15),
-            height: 50,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Color.fromRGBO(255,96, 0, 1),
-              borderRadius: BorderRadius.circular(25),
+          InkWell(
+            onTap: (){
+                onLogin();
+            },
+            child: Container(
+              margin: EdgeInsets.only(left: 20,right: 20,top: 15),
+              height: 50,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Color.fromRGBO(255,96, 0, 1),
+                borderRadius: BorderRadius.circular(25),
+              ),
+              child: Center(child: Text("Login",style: TextStyle(color: Colors.white,fontSize: 21),)),
             ),
-            child: Center(child: Text("Login",style: TextStyle(color: Colors.white,fontSize: 21),)),
           ),
-          Container(
-            margin: EdgeInsets.only(left: 20,right: 20,top: 15),
-            height: 50,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Color.fromRGBO(255,96, 0, 1),
-              borderRadius: BorderRadius.circular(25),
+          InkWell(
+            onTap: (){
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context)
+                  {return SignUpPage();}),
+                );
+            },
+            child: Container(
+              margin: EdgeInsets.only(left: 20,right: 20,top: 15),
+              height: 50,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Color.fromRGBO(255,96, 0, 1),
+                borderRadius: BorderRadius.circular(25),
+              ),
+              child: Center(child: Text("Sign Up",style: TextStyle(color: Colors.white,fontSize: 21),)),
             ),
-            child: Center(child: Text("Sign Up",style: TextStyle(color: Colors.white,fontSize: 21),)),
           )
         ],
       )
