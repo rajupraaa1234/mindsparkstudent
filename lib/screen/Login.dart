@@ -2,11 +2,13 @@ import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mindsparkstudent/Utils/AppConstant.dart';
 import 'package:mindsparkstudent/Utils/DataBase/database_helper.dart';
 import 'package:mindsparkstudent/Utils/Util.dart';
 import 'package:mindsparkstudent/models/User.dart';
 import 'package:mindsparkstudent/screen/HomeScreen.dart';
 import 'package:mindsparkstudent/screen/SignUpScreen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(const HomePage());
@@ -87,6 +89,11 @@ class _MyHomePageState extends State<MyHomePage> {
   DatabaseHelper databaseHelper = DatabaseHelper();
   User? currUser;
 
+  Future<void> setUserNameWithLogin(String username) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    sharedPreferences.setBool(AppConstant.isLogin,true);
+    sharedPreferences.setString(AppConstant.UserName,username);
+  }
 
   Future<void> onLogin() async {
     print("asdasd");
@@ -116,6 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
         return;
       }else if(this.currUser!=null){
         Util.showSnackBar(context, "user login   sdsds successfully");
+        setUserNameWithLogin(user);
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder:
         (context) =>

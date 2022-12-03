@@ -68,7 +68,84 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-           child: Text("This is home screen",style: TextStyle(color: Colors.black,fontSize: 21),),
+        height: double.infinity,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("assets/images/bg.png"),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+             Container(
+                 height: 150,
+                 width: double.infinity,
+                 decoration: BoxDecoration(
+                   image: DecorationImage(
+                     alignment: Alignment.topCenter,
+                     image: AssetImage("assets/images/header.png"),
+                   ),
+                 ),
+               child: Center(
+                 child: Row(
+                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                   children: [
+                     InkWell(
+                       onTap: (){
+                         print('hello menu ');
+                       },
+                       child: Container(
+                         height: 40,
+                           width: 40,
+                         margin: EdgeInsets.only(left: 20,top: 10),
+                         decoration: BoxDecoration(
+                           image: DecorationImage(
+                             image: AssetImage("assets/images/menu.png"),
+                           ),
+                         ),
+                       ),
+                     ),
+                     Container(
+                         width: 150,
+                         margin: EdgeInsets.only(top: 10),
+                         child: SvgPicture.asset('assets/images/logo.svg'),
+                       ),
+
+                     SizedBox(
+                       width: 50,
+                     )
+                   ],
+                 ),
+               ),
+             ),
+            InkWell(
+                child: Container(
+                    width:200,
+                    height: 100,
+                    margin: EdgeInsets.only(top: 30),
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                            image:AssetImage("assets/images/btn.png"),
+                            fit:BoxFit.fill
+                        )),
+                  child: Center(child: Text("Topics",style: TextStyle(color: Color.fromRGBO(128, 0, 0,1),fontSize: 25),)),
+                ),onTap:(){
+                      print("you clicked me");
+                 }),
+             Container(
+                  child: Expanded(
+                    child: Align(
+                      alignment: FractionalOffset.bottomCenter,
+                      child: Container(
+                          child: Image.asset('assets/images/footer.png'),
+                      )
+                    ),
+                  ),
+             )
+          ],
+        )
       ),
     );
   }

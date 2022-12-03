@@ -2,7 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mindsparkstudent/screen/HomeScreen.dart';
 import 'package:mindsparkstudent/screen/Login.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'Utils/AppConstant.dart';
 
 void main() {
   runApp(const MyApp());
@@ -68,22 +72,45 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  bool isLoginState = false;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    renderMethod();
+    checkforAlreadyLogin();
   }
 
 
-  renderMethod() async {
-    // await Future.delayed(Duration(microseconds: 3000),(){});
-    // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
+  void checkforAlreadyLogin() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    Object? isLogin = sharedPreferences.get(AppConstant.isLogin);
+    if(isLogin != null && isLogin==true){
+        renderToHomePageMethod();
+    }else {
+      renderToLoginMethod();
+    }
+  }
+
+  renderToLoginMethod() async {
+    await Future.delayed(Duration(microseconds: 3000),(){});
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
     Timer(Duration(seconds: 5),
             ()=>Navigator.pushReplacement(context,
             MaterialPageRoute(builder:
-                (context) =>
-                HomePage()
+                (context)  => HomePage()
+            )
+        )
+    );
+  }
+
+
+  renderToHomePageMethod() async {
+    await Future.delayed(Duration(microseconds: 3000),(){});
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+    Timer(Duration(seconds: 5),
+            ()=>Navigator.pushReplacement(context,
+            MaterialPageRoute(builder:
+                (context)  =>  HomeScreen()
             )
         )
     );
