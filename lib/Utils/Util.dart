@@ -15,7 +15,7 @@ class Util{
         borderRadius: BorderRadius.all(Radius.circular(rad)),
         child: Container(
           color: color,
-          child: Center(child: Text(btname,style: TextStyle(color: Colors.white,fontSize: fontsize,),)),
+          child: Center(child: Text(btname,style: TextStyle(color: Colors.white,fontSize: fontsize,fontWeight: FontWeight.bold),)),
         ),
       ),
     );
@@ -29,7 +29,7 @@ class Util{
         borderRadius: BorderRadius.only(topRight: Radius.circular(trrad),topLeft: Radius.circular(tlrad),bottomRight: Radius.circular(brrad),bottomLeft: Radius.circular(blrad)),
         child: Container(
           color: color,
-          child: Center(child: Text(btname,style: TextStyle(color: Colors.white,fontSize: fontsize,),)),
+          child: Center(child: Text(btname,style: TextStyle(color: Colors.white,fontSize: fontsize,fontWeight: FontWeight.bold),)),
         ),
       ),
     );

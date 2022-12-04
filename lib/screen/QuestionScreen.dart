@@ -18,6 +18,7 @@ class QuestionScreen extends StatelessWidget {
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Container(
           height: double.infinity,
           width: double.infinity,
@@ -89,6 +90,17 @@ class QuestionScreen extends StatelessWidget {
                                     child: Image.asset('assets/images/buddy_sad.png')
                                   )
                                 ],
+                              ),
+                              Expanded(
+                                child: SingleChildScrollView(
+                                  child: Column(
+                                    children: [
+                                        Container(
+                                          child: Text("Question list..."),
+                                        )
+                                    ],
+                                  ),
+                                ),
                               )
                             ],
                           ),
