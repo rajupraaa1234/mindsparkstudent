@@ -5,6 +5,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mindsparkstudent/Widgets/CustomNavigationDrawer.dart';
 import 'package:mindsparkstudent/screen/Login.dart';
 
+import 'QuestionScreen.dart';
+
 void main() {
   runApp(const HomeScreen());
 }
@@ -141,7 +143,11 @@ class _MyHomePageState extends State<MyHomePage> {
                         )),
                   child: Center(child: Text("Topics",style: TextStyle(color: Color.fromRGBO(128, 0, 0,3),fontSize: 25,),)),
                 ),onTap:(){
-                      print("you clicked me");
+                      Navigator.pushReplacement(context,
+                          MaterialPageRoute(builder:
+                              (context) =>
+                                  QuestionScreen()));
+                      //print("you clicked me");
                  }),
              Container(
                   child: Expanded(
