@@ -2,14 +2,18 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mindsparkstudent/Widgets/CustomNavigationDrawer.dart';
 import 'package:mindsparkstudent/screen/Login.dart';
 
 void main() {
   runApp(const HomeScreen());
 }
 
+
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
+
+
 
 
   // This widget is the root of your application.
@@ -63,10 +67,14 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
   }
 
+  final GlobalKey<ScaffoldState> scafoldKey = new GlobalKey<ScaffoldState>();
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: scafoldKey,
+      drawer: CustomNavigationDrawer(scafoldKey: scafoldKey),
       body: Container(
         height: double.infinity,
         width: double.infinity,
@@ -94,6 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
                    children: [
                      InkWell(
                        onTap: (){
+                         scafoldKey.currentState?.openDrawer();
                          print('hello menu ');
                        },
                        child: Container(
@@ -130,7 +139,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             image:AssetImage("assets/images/btn.png"),
                             fit:BoxFit.fill
                         )),
-                  child: Center(child: Text("Topics",style: TextStyle(color: Color.fromRGBO(128, 0, 0,1),fontSize: 25),)),
+                  child: Center(child: Text("Topics",style: TextStyle(color: Color.fromRGBO(128, 0, 0,3),fontSize: 25,),)),
                 ),onTap:(){
                       print("you clicked me");
                  }),
