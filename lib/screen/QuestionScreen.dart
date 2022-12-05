@@ -95,9 +95,225 @@ class QuestionScreen extends StatelessWidget {
                                 child: SingleChildScrollView(
                                   child: Column(
                                     children: [
-                                        Container(
-                                          child: Text("Question list..."),
-                                        )
+                                        InkWell(
+                                          onTap: (){
+                                            print("on question voice");
+                                          },
+                                          child: Container(
+                                            margin: EdgeInsets.only(left: 10),
+                                            child: Align(
+                                              alignment: Alignment.topLeft,
+                                              child: SizedBox(
+                                                height: 45,
+                                                  width: 45,
+                                                  child: ClipRRect(
+                                                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                                                    child: Container(
+                                                      color: Color.fromRGBO(245,101, 35, 2),
+                                                      child: Padding(
+                                                          padding: EdgeInsets.all(10),
+                                                          child: Image.asset('assets/images/sound.png')
+                                                      )
+                                                    ),
+                                                  )
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      SizedBox(height: 10,),
+                                      InkWell(
+                                        onTap: (){
+                                          print("on question decs");
+                                        },
+                                        child: Container(
+                                          margin: EdgeInsets.only(left: 10),
+                                          child: Align(
+                                            alignment: Alignment.topLeft,
+                                            child: SizedBox(
+                                                height: 45,
+                                                width: 45,
+                                                child: ClipRRect(
+                                                  borderRadius: BorderRadius.all(Radius.circular(12)),
+                                                  child: Container(
+                                                      color: Color.fromRGBO(245,101, 35, 2),
+                                                      child: Padding(
+                                                          padding: EdgeInsets.all(10),
+                                                          child: Image.asset('assets/images/sound.png')
+                                                      )
+                                                  ),
+                                                )
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        margin: EdgeInsets.only(left: 10,right: 10,top: 10),
+                                        child: Text("Which of the threads shown below has NO length?",style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: 20),),
+                                      ),
+                                      Container(
+                                        margin: EdgeInsets.only(left: 10,right: 10,top: 10),
+                                        child: Image.asset('assets/images/Boy.png'),
+                                      ),
+                                      Container(
+                                        margin: EdgeInsets.only(left: 10,right: 10,top: 10),
+                                        child: Text("Which of the threads shown below has NO length?",style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: 20),),
+                                      ),
+                                      Container(
+                                        margin: EdgeInsets.only(left: 10,right: 10,top: 10),
+                                          child: SizedBox(
+                                          height: 80,
+                                          width: MediaQuery.of(context).size.width,
+                                          child: ClipRRect(
+                                            borderRadius: BorderRadius.all(Radius.circular(8)),
+                                            child: Container(
+                                                color: Color.fromRGBO(235,249, 255, 10),
+                                                child: Container(
+                                                    child: Row(
+                                                      children: [
+                                                        Container(
+                                                          height: 40,
+                                                            width: 40,
+                                                            margin: EdgeInsets.only(left: 15),
+                                                            child: ClipRRect(
+                                                              borderRadius: BorderRadius.all(Radius.circular(25)),
+                                                              child: Container(
+                                                                color: Color.fromRGBO(56,168, 223, 10),
+                                                                child: Padding(
+                                                                    padding: EdgeInsets.all(8),
+                                                                    child: Center(child: Text("A",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 25),))
+                                                                ),
+                                                              ),
+                                                            ),
+                                                        ),
+                                                        Container(
+                                                            margin: EdgeInsets.only(left: 15,right: 15),
+                                                            child: Text("All the three threads have some length.",style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: 15),),
+                                                        )
+                                                      ],
+                                                    ),
+                                                )
+                                            ),
+                                          )
+                                       ),
+                                      ),
+                                      Container(
+                                        margin: EdgeInsets.only(left: 10,right: 10,top: 10),
+                                        child: SizedBox(
+                                            height: 80,
+                                            width: MediaQuery.of(context).size.width,
+                                            child: ClipRRect(
+                                              borderRadius: BorderRadius.all(Radius.circular(8)),
+                                              child: Container(
+                                                  color: Color.fromRGBO(235,249, 255, 10),
+                                                  child: Container(
+                                                    child: Row(
+                                                      children: [
+                                                        Container(
+                                                          height: 40,
+                                                          width: 40,
+                                                          margin: EdgeInsets.only(left: 15),
+                                                          child: ClipRRect(
+                                                            borderRadius: BorderRadius.all(Radius.circular(25)),
+                                                            child: Container(
+                                                              color: Color.fromRGBO(56,168, 223, 10),
+                                                              child: Padding(
+                                                                  padding: EdgeInsets.all(8),
+                                                                  child: Center(child: Text("B",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 25),))
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        Container(
+                                                          margin: EdgeInsets.only(left: 15,right: 15),
+                                                          child: Text("All the three threads have some length.",style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: 15),),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  )
+                                              ),
+                                            )
+                                        ),
+                                      ),
+                                      Container(
+                                        margin: EdgeInsets.only(left: 10,right: 10,top: 10),
+                                        child: SizedBox(
+                                            height: 80,
+                                            width: MediaQuery.of(context).size.width,
+                                            child: ClipRRect(
+                                              borderRadius: BorderRadius.all(Radius.circular(8)),
+                                              child: Container(
+                                                  color: Color.fromRGBO(235,249, 255, 10),
+                                                  child: Container(
+                                                    child: Row(
+                                                      children: [
+                                                        Container(
+                                                          height: 40,
+                                                          width: 40,
+                                                          margin: EdgeInsets.only(left: 15),
+                                                          child: ClipRRect(
+                                                            borderRadius: BorderRadius.all(Radius.circular(25)),
+                                                            child: Container(
+                                                              color: Color.fromRGBO(56,168, 223, 10),
+                                                              child: Padding(
+                                                                  padding: EdgeInsets.all(8),
+                                                                  child: Center(child: Text("C",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 25),))
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        Container(
+                                                          margin: EdgeInsets.only(left: 15,right: 15),
+                                                          child: Text("All the three threads have some length.",style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: 15),),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  )
+                                              ),
+                                            )
+                                        ),
+                                      ),
+                                      Container(
+                                        margin: EdgeInsets.only(left: 10,right: 10,top: 10),
+                                        child: SizedBox(
+                                            height: 80,
+                                            width: MediaQuery.of(context).size.width,
+                                            child: ClipRRect(
+                                              borderRadius: BorderRadius.all(Radius.circular(8)),
+                                              child: Container(
+                                                  color: Color.fromRGBO(235,249, 255, 10),
+                                                  child: Container(
+                                                    child: Row(
+                                                      children: [
+                                                        Container(
+                                                          height: 40,
+                                                          width: 40,
+                                                          margin: EdgeInsets.only(left: 15),
+                                                          child: ClipRRect(
+                                                            borderRadius: BorderRadius.all(Radius.circular(25)),
+                                                            child: Container(
+                                                              color: Color.fromRGBO(56,168, 223, 10),
+                                                              child: Padding(
+                                                                  padding: EdgeInsets.all(8),
+                                                                  child: Center(child: Text("C",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 25),))
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        Container(
+                                                          margin: EdgeInsets.only(left: 15,right: 15),
+                                                          child: Text("All the three threads have some length.",style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: 15),),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  )
+                                              ),
+                                            )
+                                        ),
+                                      ),
+                                      Container(
+                                        margin: EdgeInsets.only(left: 15,right: 15,bottom: 20),
+                                      )
+
                                     ],
                                   ),
                                 ),
