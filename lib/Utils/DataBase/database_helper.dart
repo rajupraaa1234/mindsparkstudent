@@ -74,7 +74,7 @@ class DatabaseHelper {
     var res = await db?.rawQuery(
         "SELECT * FROM $userTable WHERE username = '$user'");
     print("user exist -----> ${res!.length}");
-    if(res!.length>0) return Future<bool>.value(true);
+    if(res.length>0) return Future<bool>.value(true);
     return  Future<bool>.value(false);
   }
 

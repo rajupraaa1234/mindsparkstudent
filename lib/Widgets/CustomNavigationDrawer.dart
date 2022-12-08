@@ -57,7 +57,7 @@ class _CustomNavigationDrawerState extends State<CustomNavigationDrawer> {
                       children: [
                         InkWell(
                           onTap: (){
-                            this.scafoldKey?.currentState?.closeDrawer();
+                            this.scafoldKey!.currentState!.closeDrawer();
                           },
                           child: ListTile(
                             leading: Icon(Icons.home,color: Colors.white,size: 35,),
@@ -67,7 +67,7 @@ class _CustomNavigationDrawerState extends State<CustomNavigationDrawer> {
                         InkWell(
                           onTap: (){
                             onLogout();
-                            this.scafoldKey?.currentState?.closeDrawer();
+                            this.scafoldKey!.currentState!.closeDrawer();
                           },
                           child: ListTile(
                             leading: Icon(Icons.logout_outlined,color: Colors.white,size: 35,),

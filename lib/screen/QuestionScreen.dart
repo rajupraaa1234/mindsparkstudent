@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mindsparkstudent/Utils/AppConstant.dart';
@@ -8,13 +10,13 @@ import 'package:mindsparkstudent/Utils/Util.dart';
 import 'package:mindsparkstudent/models/TopicListModal.dart';
 import 'package:http/http.dart' as http;
 import 'package:mindsparkstudent/screen/Login.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Utils/Dailog_helper.dart';
 import '../models/MCQ.dart';
 
-// void main() {
-//   runApp(const QuestionScreen());
-// }
 
 class QuestionScreen extends StatelessWidget {
   const QuestionScreen({super.key, required TopicListModal this.data});
@@ -42,10 +44,14 @@ class QuestionPage extends StatefulWidget {
   final String title;
 
   @override
-  State<QuestionPage> createState() => _QuestionPageState(data);
+  State<QuestionPage> createState() => QuestionPageState(data);
 }
 
-class _QuestionPageState extends State<QuestionPage> {
+class QuestionPageState extends State<QuestionPage> {
+
+
+  final TopicListModal data;
+  QuestionPageState(TopicListModal this.data);
 
   // all 4 Options
   var optionAText = "Option A text";
@@ -67,27 +73,204 @@ class _QuestionPageState extends State<QuestionPage> {
   Color optionCColor = Color.fromRGBO(56,168, 223, 10);
   Color optionDColor = Color.fromRGBO(56,168, 223, 10);
 
-  final TopicListModal data;
-  bool loader = false;
-  _QuestionPageState(TopicListModal this.data);
-  late List<MCQ> questionList = [];
-  
 
+  // Widget Visibility
+  bool questionIntVoice = false;
+  bool questionDescVoice = false;
+  bool questionInstruction = false;
+  bool questionImage = false;
+  bool questionDescVis = false;
+  bool OptionsAvis = false;
+  bool OptionsBvis = false;
+  bool OptionsCvis = false;
+  bool OptionsDvis = false;
+
+  //Permission
+  late final PermissionStatus permissionStatus;
+
+
+
+
+  bool loader = false;
+  late List<MCQ> questionList = [];
+  int index = 0;
+
+
+  //TopicName
+  String topicName = "topic";
+
+  //Question Sequesnce number
+  String qnumber = "1";
+  double progress = 0.0;
+  late String currentImgPath;
+  Dio dio = Dio();
 
   @override
   void initState() {
     super.initState();
-    fetchQuestion();
+    //checkforPermission();
+    downloadQuestion();
+   // updateQuestion();
+  }
+
+  void downloadQuestion() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    if(sharedPreferences.get(data.id) != null){
+      print("no need to download");
+      updateQuestionList();
+    }else{
+      print("need to download");
+      fetchQuestion();
+    }
+  }
+  
+  void updateQuestionList() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    setState(() {
+      questionList = MCQ.decode(sharedPreferences.get(data.id) as String);
+    });
+    print("list --> ${questionList.length}");
+  }
+  void updateQuestion(){
+    MCQ firstQuestion = questionList[index];
+    setState(() {
+      qnumber = firstQuestion.question_seq;
+    });
+    if(!firstQuestion.question_inst.isEmpty){
+        setState(() {
+          questionIntVoice = true;
+        });
+    }
+    if(!firstQuestion.question_voice.isEmpty){
+      setState(() {
+        questionDescVoice = true;
+      });
+    }
+    if(!firstQuestion.question_desc.isEmpty){
+       setState(() {
+         questionDescVis = true;
+         QuestionDesc = firstQuestion.question_desc;
+       });
+    }
+    if(!firstQuestion.question_body.isEmpty){
+      setState(() {
+        questionInstruction = true;
+        QuestionInst = firstQuestion.question_body;
+      });
+    }
+    if(!firstQuestion.mcq_1.isEmpty){
+      optionAText = firstQuestion.mcq_1;
+      OptionsAvis = true;
+    }
+    if(!firstQuestion.mcq_2.isEmpty){
+      optionBText = firstQuestion.mcq_2;
+      OptionsBvis = true;
+    }
+    if(!firstQuestion.mcq_3.isEmpty){
+      optionCText = firstQuestion.mcq_3;
+      OptionsCvis = true;
+    }
+    if(!firstQuestion.mcq_4.isEmpty){
+      optionDText = firstQuestion.mcq_4;
+      OptionsDvis = true;
+    }
   }
 
   String getApiWithendpoint(){
     String id = data.id;
+    setState(() {
+      topicName = data.name;
+    });
     String endpont = "Topic_${id}.json";
     String api = "http://rajupraaaa.github.io/Api/${endpont}";
     return api;
   }
 
-  void fetchQuestion() async {
+  void onSubmit(){
+
+  }
+
+  String getFileNameFromUrl(String url) {
+    String fileName = url.split('/').toList().last;
+    return fileName;
+  }
+
+  // Future<void> saveNetworkFileToLocalDirectory(String fileSrcUrl) async {
+  //   var response = await http.get(Uri.parse(fileSrcUrl));
+  //   Directory documentsDirectory = await getApplicationDocumentsDirectory();
+  //
+  //   String filePath = join(documentDirectory.path, getFileNameFromUrl(fileSrcUrl));
+  //   File file = new File(filePath);
+  //   await file.writeAsBytes(response.bodyBytes);
+  //   // The file has been written at the filePath specified, in this case,
+  //   // The app's document directory.
+  // }
+
+  void checkforPermission() async {
+    permissionStatus = await Permission.storage.status;
+    if (permissionStatus != PermissionStatus.granted) {
+        PermissionStatus permissionStatus= await Permission.storage.request();
+        setState(() {
+        permissionStatus = permissionStatus;
+        });
+    }
+  }
+
+  Future<String> startDownloading(String url,String fileName) async {
+    String path = await _getFilePath(fileName);
+    setState(() {
+      currentImgPath = path;
+    });
+    //print("path -------> ${path}");
+    await dio.download(
+      url,
+      path,
+      onReceiveProgress: (recivedBytes, totalBytes) {
+        setState(() {
+          progress = recivedBytes / totalBytes;
+        });
+        //print("progress------> ${progress}");
+      },
+      deleteOnError: true,
+    ).then((_) {
+      return path;
+    });
+    return path;
+  }
+
+  Future<String> _getFilePath(String filename) async {
+    String dir = (await getApplicationDocumentsDirectory()).path;
+    return "${dir}/$filename";
+  }
+
+
+  void saveAllQuestioninLocal() async {
+    late List<MCQ> storelist = [];
+    questionList.forEach((element) async {
+         if(!element.question_image.isEmpty){
+             String Imgurl = element.question_image;
+             setState(() async {
+               String imgurl = await startDownloading(Imgurl,"${element.question_seq}.jpg",) as String;
+               storelist.add(new MCQ(element.question_seq, element.question_body,element.question_type, element.question_options, element.mcq_1, element.mcq_2, element.mcq_3, element.mcq_4, element.question_inst, element.question_voice, element.correct, element.question_desc, imgurl));
+             });
+        }else{
+           setState(() {
+             storelist.add(new MCQ(element.question_seq, element.question_body,element.question_type, element.question_options, element.mcq_1, element.mcq_2, element.mcq_3, element.mcq_4, element.question_inst, element.question_voice, element.correct, element.question_desc, ""));
+           });
+         }
+    });
+
+    Future.delayed(Duration(seconds: 2), () async{
+       final String encodedData = MCQ.encode(storelist);
+       SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+      sharedPreferences.setString(data.id, encodedData);
+      setState(() {
+        loader =false;
+      });
+    });
+  }
+
+void fetchQuestion() async {
     setState(() {
       loader =true;
     });
@@ -99,9 +282,12 @@ class _QuestionPageState extends State<QuestionPage> {
       setState(() {
         questionList.addAll(List<MCQ>.from(json.decode(responseapi).map((x) => MCQ.fromJson(x))));
       });
-      setState(() {
-        loader =false;
-      });
+      saveAllQuestioninLocal();
+      // setState(() {
+      //   loader =false;
+      //
+      //   //updateQuestion();
+      // });
     }catch(e){
       setState(() {
         loader =false;
@@ -128,7 +314,7 @@ class _QuestionPageState extends State<QuestionPage> {
         child: Column(
           children: [
             Visibility(
-              visible: false,
+              visible: questionIntVoice,
               child: InkWell(
                 onTap: (){
                   onQuestionInstVoiceClick();
@@ -157,7 +343,7 @@ class _QuestionPageState extends State<QuestionPage> {
             ),
             SizedBox(height: 10,),
             Visibility(
-              visible: false,
+              visible: questionDescVoice,
               child: InkWell(
                 onTap: (){
                   onQuestionDescriptionClick();
@@ -185,18 +371,22 @@ class _QuestionPageState extends State<QuestionPage> {
               ),
             ),
             Visibility(
+              visible: questionInstruction,
               child: Container(
                 margin: EdgeInsets.only(left: 10,right: 10,top: 10),
                 child: Text(QuestionInst,style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: 20),),
               ),
             ),
             Visibility(
+              visible: questionImage,
               child: Container(
                 margin: EdgeInsets.only(left: 10,right: 10,top: 10),
                 child: Image.asset(QuestionImage),
               ),
             ),
-            Visibility(child:
+            Visibility(
+              visible: questionDescVis,
+              child:
                Container(
                   margin: EdgeInsets.only(left: 10,right: 10,top: 10),
                   child: Text(QuestionDesc,style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: 20),),
@@ -206,6 +396,7 @@ class _QuestionPageState extends State<QuestionPage> {
               child: loader ?  DialogHelper.loading() : null,
             ),
             Visibility(
+              visible: OptionsAvis,
               child: InkWell(
                 onTap: (){
                   optionSelect("a");
@@ -251,6 +442,7 @@ class _QuestionPageState extends State<QuestionPage> {
               ),
             ),
             Visibility(
+              visible: OptionsBvis,
                 child: InkWell(
                   onTap: (){
                     optionSelect("b");
@@ -296,6 +488,7 @@ class _QuestionPageState extends State<QuestionPage> {
                 ),
             ),
             Visibility(
+              visible: OptionsCvis,
               child: InkWell(
                 onTap: (){
                   optionSelect("c");
@@ -341,6 +534,7 @@ class _QuestionPageState extends State<QuestionPage> {
               ),
             ),
             Visibility(
+              visible: OptionsDvis,
                 child: InkWell(
                   onTap: (){
                     optionSelect("d");
@@ -388,7 +582,6 @@ class _QuestionPageState extends State<QuestionPage> {
             Container(
               margin: EdgeInsets.only(left: 15,right: 15,bottom: 20),
             )
-
           ],
         ),
       ),
@@ -439,7 +632,7 @@ class _QuestionPageState extends State<QuestionPage> {
                       Container(
                         //width: 150,
                           margin: EdgeInsets.only(top: 12),
-                          child: Text("Shapes and Space",style: TextStyle(color: Colors.black,fontSize: 22),)
+                          child: Text(topicName,style: TextStyle(color: Colors.black,fontSize: 22),)
                       ),
                       SizedBox(
                         width: 40,
@@ -464,7 +657,7 @@ class _QuestionPageState extends State<QuestionPage> {
                                 children: [
                                   Container(
                                     margin: EdgeInsets.only(left: 0,bottom: 20),
-                                    child: Util.getCustomBtnBackgroundWithDiffRadius(40,40,Color.fromRGBO(58,137,252,1),"1",12,0,0,12,15),
+                                    child: Util.getCustomBtnBackgroundWithDiffRadius(40,40,Color.fromRGBO(58,137,252,1),qnumber,12,0,0,12,15),
                                   ),
                                   Spacer(),
                                   Container(
@@ -735,7 +928,8 @@ class _QuestionPageState extends State<QuestionPage> {
 
               InkWell(
                 onTap: (){
-                  print("on subject click");
+                  onSubmit();
+                  //print("on subject click");
                 },
                 child: Container(
                   margin: EdgeInsets.only(top: 15,right: 15),

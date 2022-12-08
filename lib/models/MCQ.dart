@@ -1,4 +1,6 @@
 
+import 'dart:convert';
+
 class MCQ{
 
 
@@ -46,5 +48,32 @@ class MCQ{
         json['question_image'] as String
     );
   }
+
+  static Map<String, dynamic> toMap(MCQ mcq) => {
+    'question_seq': mcq.question_seq,
+    'question_body': mcq.question_body,
+    'question_type': mcq.question_type,
+    'question_options': mcq.question_options,
+    'mcq_1': mcq.mcq_1,
+    'mcq_2': mcq.mcq_2,
+    'mcq_3': mcq.mcq_3,
+    'mcq_4' : mcq.mcq_4,
+    'question_inst' : mcq.question_inst,
+    'question_voice' : mcq.question_voice,
+    'correct' : mcq.correct,
+    'question_desc' : mcq.question_desc,
+    'question_image' : mcq.question_image,
+  };
+
+  static String encode(List<MCQ> list) => json.encode(
+    list
+        .map<Map<String, dynamic>>((list) => MCQ.toMap(list))
+        .toList(),
+  );
+
+  static List<MCQ> decode(String mcq) =>
+      (json.decode(mcq) as List<dynamic>)
+          .map<MCQ>((item) => MCQ.fromJson(item))
+          .toList();
 
 }
