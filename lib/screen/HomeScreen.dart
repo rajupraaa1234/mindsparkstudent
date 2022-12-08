@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mindsparkstudent/Widgets/CustomNavigationDrawer.dart';
 import 'package:mindsparkstudent/screen/Login.dart';
+import 'package:mindsparkstudent/screen/TopicListingScreen.dart';
 
 import 'QuestionScreen.dart';
 
@@ -22,23 +23,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(title: 'Dashboard Screen',),
-    );
+    return MyHomePage(title: 'Dashboard Screen',);
   }
 }
 
@@ -119,10 +104,12 @@ class _MyHomePageState extends State<MyHomePage> {
                        ),
                      ),
                      Container(
-                         width: 150,
-                         margin: EdgeInsets.only(top: 10),
-                         child: SvgPicture.asset('assets/images/logo.svg'),
-                       ),
+                       child: Container(
+                           width: 150,
+                           margin: EdgeInsets.only(top: 10),
+                           child: SvgPicture.asset('assets/images/logo.svg'),
+                         ),
+                     ),
 
                      SizedBox(
                        width: 50,
@@ -143,10 +130,14 @@ class _MyHomePageState extends State<MyHomePage> {
                         )),
                   child: Center(child: Text("Topics",style: TextStyle(color: Color.fromRGBO(128, 0, 0,3),fontSize: 25,),)),
                 ),onTap:(){
-                      Navigator.pushReplacement(context,
-                          MaterialPageRoute(builder:
-                              (context) =>
-                                  QuestionScreen()));
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => TopicListing()),
+                        );
+                      // Navigator.pushReplacement(context,
+                      //     MaterialPageRoute(builder:
+                      //         (context) =>
+                      //             TopicListing()));
                       //print("you clicked me");
                  }),
              Container(
