@@ -70,12 +70,10 @@ class Util{
                   Spacer(),
                   InkWell(
                     onTap: (){
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SessionReportPage(topicname: topic),
-                          ));
-                      print('done click ');
+                      Navigator.pushReplacement(context,
+                          MaterialPageRoute(builder:
+                              (context) =>
+                                  SessionReportPage(topicname: topic)));
                     },
                     child: Container(
                       margin: EdgeInsets.only(right: 30),
@@ -95,6 +93,39 @@ class Util{
       ),
     );
     return errorDialog;
+  }
+
+
+  static int getTimeInSeconds(String str) {
+    List<String> curr_time = str.split(":");
+    int t = int.parse(curr_time[0]) * 60 * 60 + int.parse(curr_time[1]) * 60
+        + int.parse(curr_time[2]);
+
+    return t;
+  }
+
+  static String convertSecToTime(int t) {
+    int hours = (t/3600).toInt();
+    String hh = hours < 10 ? "0" + hours.toString()
+        : hours.toString();
+    int min = ((t % 3600) / 60).toInt();
+    String mm = min < 10 ? "0" + min.toString()
+        : min.toString();
+    int sec = ((t % 3600) % 60);
+    String ss = sec < 10 ? "0" + sec.toString()
+        : sec.toString();
+    String ans = hh + ":" + mm + ":" + ss;
+    return ans;
+  }
+
+   static String diff(String st, String et) {
+
+    int t1 = getTimeInSeconds(st);
+    int t2 = getTimeInSeconds(et);
+
+    int time_diff = (t1 - t2 < 0) ? t2 - t1 : t1 - t2;
+
+    return convertSecToTime(time_diff);
   }
 
 }

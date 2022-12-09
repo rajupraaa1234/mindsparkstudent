@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
 import 'package:mindsparkstudent/Utils/AppConstant.dart';
 import 'package:mindsparkstudent/Utils/Util.dart';
 import 'package:mindsparkstudent/models/TopicListModal.dart';
@@ -106,6 +107,7 @@ class QuestionPageState extends State<QuestionPage> {
   late List<MCQ> questionList = [];
   int index = 0;
   int result = 0;
+  int attempted = 0;
 
 
   //TopicName
@@ -168,11 +170,14 @@ class QuestionPageState extends State<QuestionPage> {
     }else{
       print("need to download");
       fetchQuestion();
+      updateQuestionList();
     }
   }
   
   void updateQuestionList() async {
+    String tdata = DateFormat("hh:mm:ss").format(DateTime.now());
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    sharedPreferences.setString(AppConstant.startTime, tdata);
     setState(() {
       questionList = MCQ.decode(sharedPreferences.get(data.id) as String);
     });
@@ -363,6 +368,9 @@ void fetchQuestion() async {
   }
 
   void optionSelect(String option){
+    setState(() {
+      attempted++;
+    });
     if(isClick ==false) {
       String ans = questionList[index].correct;
       String userAns = decodeAns(option);
@@ -716,6 +724,15 @@ void fetchQuestion() async {
     );
   }
 
+  void saveResultInLocal() async {
+    String tdata = DateFormat("hh:mm:ss").format(DateTime.now());
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    sharedPreferences.setInt(AppConstant.attempt, attempted);
+    sharedPreferences.setInt(AppConstant.result, result);
+    sharedPreferences.setInt(AppConstant.total, questionList.length);
+    sharedPreferences.setString(AppConstant.endTime, tdata);
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -750,6 +767,7 @@ void fetchQuestion() async {
                     children: [
                       InkWell(
                         onTap: (){
+                          saveResultInLocal();
                           showDialog(context: context, builder: (BuildContext context) => Util.getCustomDialog(context,topicName),barrierDismissible: false);
                         },
                         child: Container(
