@@ -96,7 +96,7 @@ class _MyHomePageState extends State<MyHomePage> {
               //print("str-----> ${value}");
               this.currUser = null;
             }else{
-              print("str-----> ${value!['username'] as String}");
+              //print("str-----> ${value!['username'] as String}");
               this.currUser = new User(value!['username'] as String, value!['password'] as String);
             }
           })

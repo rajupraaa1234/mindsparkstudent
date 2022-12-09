@@ -245,7 +245,7 @@ class QuestionPageState extends State<QuestionPage> {
         Util.showSnackBar(context, "please give your answer...");
     }else {
         if (index == questionList.length - 1) {
-          showDialog(context: context, builder: (BuildContext context) => Util.getCustomDialog(context),barrierDismissible: false);
+          showDialog(context: context, builder: (BuildContext context) => Util.getCustomDialog(context,topicName),barrierDismissible: false);
           //print("Question end ${result}");
         }
         else if (index < questionList.length) {
@@ -750,7 +750,7 @@ void fetchQuestion() async {
                     children: [
                       InkWell(
                         onTap: (){
-                          showDialog(context: context, builder: (BuildContext context) => Util.getCustomDialog(context),barrierDismissible: false);
+                          showDialog(context: context, builder: (BuildContext context) => Util.getCustomDialog(context,topicName),barrierDismissible: false);
                         },
                         child: Container(
                           margin: EdgeInsets.only(left: 20,top: 10),

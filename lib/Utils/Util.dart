@@ -2,6 +2,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../screen/sessionReportPage.dart';
+
 class Util{
   static void showSnackBar(BuildContext context,String msg){
     final snackbar = SnackBar(content: Text(msg));
@@ -35,7 +37,7 @@ class Util{
     );
   }
 
-  static Dialog getCustomDialog(BuildContext context){
+  static Dialog getCustomDialog(BuildContext context,String topic){
     Dialog errorDialog = Dialog(
 
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)), //this right here
@@ -68,6 +70,11 @@ class Util{
                   Spacer(),
                   InkWell(
                     onTap: (){
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SessionReportPage(topicname: topic),
+                          ));
                       print('done click ');
                     },
                     child: Container(
