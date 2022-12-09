@@ -13,6 +13,7 @@ import 'package:mindsparkstudent/screen/Login.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:assets_audio_player/assets_audio_player.dart';
 
 import '../Utils/Dailog_helper.dart';
 import '../models/MCQ.dart';
@@ -47,6 +48,7 @@ class QuestionPage extends StatefulWidget {
   State<QuestionPage> createState() => QuestionPageState(data);
 }
 
+
 class QuestionPageState extends State<QuestionPage> {
 
 
@@ -67,11 +69,17 @@ class QuestionPageState extends State<QuestionPage> {
   var QuestionImage = "assets/images/Boy.png";
   var sadBuddyImage = "assets/images/buddy_happy.png";
 
+  //Sound
+  var correctSound = "assets/audio/correct.mp3";
+  var inCorrectSound = "assets/audio/incorrect.mp3";
+
   //Options Color
   Color optionAColor = Color.fromRGBO(56,168, 223, 10);
   Color optionBColor = Color.fromRGBO(56,168, 223, 10);
   Color optionCColor = Color.fromRGBO(56,168, 223, 10);
   Color optionDColor = Color.fromRGBO(56,168, 223, 10);
+  Color CorrectOptioncolor = Color.fromRGBO(0,200, 83, 2);
+  Color InCorrectOptioncolor = Color.fromRGBO(252,60, 0, 2);
 
 
   // Widget Visibility
@@ -88,32 +96,71 @@ class QuestionPageState extends State<QuestionPage> {
   //Permission
   late final PermissionStatus permissionStatus;
 
+  //OptionclickListner
+  bool isClick = false;
+
 
 
 
   bool loader = false;
   late List<MCQ> questionList = [];
   int index = 0;
+  int result = 0;
 
 
   //TopicName
-  String topicName = "topic";
+  String topicName = "topic1";
 
   //Question Sequesnce number
   String qnumber = "1";
   double progress = 0.0;
   late String currentImgPath;
+  AssetsAudioPlayer _assetsAudioPlayer = AssetsAudioPlayer() ;
   Dio dio = Dio();
 
   @override
   void initState() {
     super.initState();
     //checkforPermission();
+    //_assetsAudioPlayer = AssetsAudioPlayer.newPlayer();
     downloadQuestion();
    // updateQuestion();
   }
 
+  void playSound(String url) async {
+    try{
+      _assetsAudioPlayer = AssetsAudioPlayer.newPlayer();
+      _assetsAudioPlayer!.open(
+        Audio(url),
+        autoStart: true,
+      );
+    }catch(e){
+        print("sound error...");
+    }
+  }
+  void resetQuestionFrame(){
+    setState(() {
+       questionIntVoice = false;
+       questionDescVoice = false;
+       questionInstruction = false;
+       questionImage = false;
+       questionDescVis = false;
+       OptionsAvis = false;
+       OptionsBvis = false;
+       OptionsCvis = false;
+       OptionsDvis = false;
+       isClick = false;
+       optionAColor = Color.fromRGBO(56,168, 223, 10);
+       optionBColor = Color.fromRGBO(56,168, 223, 10);
+       optionCColor = Color.fromRGBO(56,168, 223, 10);
+       optionDColor = Color.fromRGBO(56,168, 223, 10);
+    });
+  }
+
   void downloadQuestion() async {
+    setState(() {
+      topicName = data.name;
+    });
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     if(sharedPreferences.get(data.id) != null){
       print("no need to download");
@@ -129,13 +176,20 @@ class QuestionPageState extends State<QuestionPage> {
     setState(() {
       questionList = MCQ.decode(sharedPreferences.get(data.id) as String);
     });
-    print("list --> ${questionList.length}");
+    print("list --> ${questionList[0].question_seq}");
+      setState(() {
+        int temp = index + 1;
+        qnumber = temp.toString();
+      });
+    updateQuestion();
+
   }
   void updateQuestion(){
     MCQ firstQuestion = questionList[index];
-    setState(() {
-      qnumber = firstQuestion.question_seq;
-    });
+    if(!firstQuestion.question_image.isEmpty){
+      QuestionImage = firstQuestion.question_image;
+      questionImage = true;
+    }
     if(!firstQuestion.question_inst.isEmpty){
         setState(() {
           questionIntVoice = true;
@@ -187,7 +241,22 @@ class QuestionPageState extends State<QuestionPage> {
   }
 
   void onSubmit(){
-
+    if(isClick == false){
+        Util.showSnackBar(context, "please give your answer...");
+    }else {
+        if (index == questionList.length - 1) {
+          showDialog(context: context, builder: (BuildContext context) => Util.getCustomDialog(context),barrierDismissible: false);
+          //print("Question end ${result}");
+        }
+        else if (index < questionList.length) {
+          setState(() {
+            index++;
+            qnumber = (index + 1).toString();
+          });
+          resetQuestionFrame();
+          updateQuestion();
+        }
+    }
   }
 
   String getFileNameFromUrl(String url) {
@@ -195,16 +264,6 @@ class QuestionPageState extends State<QuestionPage> {
     return fileName;
   }
 
-  // Future<void> saveNetworkFileToLocalDirectory(String fileSrcUrl) async {
-  //   var response = await http.get(Uri.parse(fileSrcUrl));
-  //   Directory documentsDirectory = await getApplicationDocumentsDirectory();
-  //
-  //   String filePath = join(documentDirectory.path, getFileNameFromUrl(fileSrcUrl));
-  //   File file = new File(filePath);
-  //   await file.writeAsBytes(response.bodyBytes);
-  //   // The file has been written at the filePath specified, in this case,
-  //   // The app's document directory.
-  // }
 
   void checkforPermission() async {
     permissionStatus = await Permission.storage.status;
@@ -260,7 +319,7 @@ class QuestionPageState extends State<QuestionPage> {
          }
     });
 
-    Future.delayed(Duration(seconds: 2), () async{
+    Future.delayed(Duration(seconds: 3), () async{
        final String encodedData = MCQ.encode(storelist);
        SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
       sharedPreferences.setString(data.id, encodedData);
@@ -296,8 +355,73 @@ void fetchQuestion() async {
     }
   }
 
+  String decodeAns(String str){
+     if(str == "a") return "1";
+     else if(str == "b") return "2";
+     else if(str == "c") return "3";
+     else return "4";
+  }
+
   void optionSelect(String option){
-     print("options --> ${option}");
+    if(isClick ==false) {
+      String ans = questionList[index].correct;
+      String userAns = decodeAns(option);
+      bool isCorrect = ans == userAns ? true : false;
+      isClick = true;
+      if (option == "a") {
+        if (isCorrect) {
+          playSound(correctSound);
+          setState(() {
+            optionAColor = CorrectOptioncolor;
+            result++;
+          });
+        } else {
+          playSound(inCorrectSound);
+          setState(() {
+            optionAColor = InCorrectOptioncolor;
+          });
+        }
+      } else if (option == "b") {
+        if (isCorrect) {
+          playSound(correctSound);
+          setState(() {
+            optionBColor = CorrectOptioncolor;
+            result++;
+          });
+        } else {
+          playSound(inCorrectSound);
+          setState(() {
+            optionBColor = InCorrectOptioncolor;
+          });
+        }
+      } else if (option == "c") {
+        if (isCorrect) {
+          playSound(correctSound);
+          setState(() {
+            optionCColor = CorrectOptioncolor;
+            result++;
+          });
+        } else {
+          playSound(inCorrectSound);
+          setState(() {
+            optionCColor = InCorrectOptioncolor;
+          });
+        }
+      } else {
+        if (isCorrect) {
+          playSound(correctSound);
+          setState(() {
+            optionDColor = CorrectOptioncolor;
+            result++;
+          });
+        } else {
+          playSound(inCorrectSound);
+          setState(() {
+            optionDColor = InCorrectOptioncolor;
+          });
+        }
+      }
+    }
   }
 
   void onQuestionInstVoiceClick(){
@@ -381,7 +505,11 @@ void fetchQuestion() async {
               visible: questionImage,
               child: Container(
                 margin: EdgeInsets.only(left: 10,right: 10,top: 10),
-                child: Image.asset(QuestionImage),
+                child: Image.file(
+                  File(QuestionImage),
+                  width: 400,
+                  height: 300,
+                )
               ),
             ),
             Visibility(
@@ -622,7 +750,7 @@ void fetchQuestion() async {
                     children: [
                       InkWell(
                         onTap: (){
-                          print('hello menu ');
+                          showDialog(context: context, builder: (BuildContext context) => Util.getCustomDialog(context),barrierDismissible: false);
                         },
                         child: Container(
                           margin: EdgeInsets.only(left: 20,top: 10),
