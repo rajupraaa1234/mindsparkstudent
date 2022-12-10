@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../Utils/AppConstant.dart';
 import '../screen/Login.dart';
 
 class CustomNavigationDrawer extends StatefulWidget {
@@ -16,6 +17,21 @@ class _CustomNavigationDrawerState extends State<CustomNavigationDrawer> {
   _CustomNavigationDrawerState( this.scafoldKey){
     this.scafoldKey = scafoldKey;
   }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getUserDetails();
+  }
+
+   late String username = "username";
+   void getUserDetails() async {
+     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+     setState(() {
+       username = sharedPreferences.get(AppConstant.UserName) as String;
+     });
+   }
 
    Future<void> onLogout() async {
      SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
@@ -47,8 +63,24 @@ class _CustomNavigationDrawerState extends State<CustomNavigationDrawer> {
               children: [
                 Container(
                     height: height*0.25,
+                    width: width,
                     color: Colors.white,
-
+                    child: Padding(
+                      padding: EdgeInsets.all(20.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            height: 100,
+                            child: Image.asset("assets/images/Boy.png"),
+                          ),
+                          Container(
+                            margin: EdgeInsets.only(top: 10),
+                            child: Text(username,style: TextStyle(color: Colors.black,fontSize: 22),),
+                          )
+                        ],
+                      ),
+                    ),
                 ),
                 SizedBox(height:30,),
                 Container(

@@ -106,7 +106,7 @@ class _MyHomePageState extends State<MyHomePage> {
         Util.showSnackBar(context, "Invalid credential");
         return;
       }else if(this.currUser!=null){
-        Util.showSnackBar(context, "user login   sdsds successfully");
+        Util.showSnackBar(context, "user login successfully");
         setUserNameWithLogin(user);
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder:
@@ -130,55 +130,32 @@ class _MyHomePageState extends State<MyHomePage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
 
-    return Scaffold(
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Center(
-            child: Container(
-                  width: 200,
-                  child: SvgPicture.asset('assets/images/logo.svg'),
-            ),
-          ),
-          Container(
-             child: Text("Login",style: TextStyle(color: Colors.black,fontSize: 21),),
-          ),
-          Container(
-            margin: EdgeInsets.only(left: 20,right: 20,top: 30),
-            height: 50,
-            child: TextField(
-              controller: username,
-              textAlign: TextAlign.center,
-              decoration: InputDecoration(
-                hintText: 'username',
-                hintStyle: TextStyle(color: Colors.grey,),
-                focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(25),
-                    borderSide: BorderSide(
-                        color: Color.fromRGBO(213,229, 241, 1),
-                        width: 1
-                    )
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(25),
-                  borderSide: BorderSide(
-                      color: Color.fromRGBO(213,229, 241, 1),
-                    width: 1
-                  )
-                )
+    return WillPopScope(
+      onWillPop: () async{
+        return false;
+      },
+      child: Scaffold(
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Center(
+              child: Container(
+                    width: 200,
+                    child: SvgPicture.asset('assets/images/logo.svg'),
               ),
             ),
-          ),
-          Container(
-            margin: EdgeInsets.only(left: 20,right: 20,top: 15),
-            height: 50,
-            child: TextField(
-              controller: password,
-              textAlign: TextAlign.center,
-              obscureText: true,
-              decoration: InputDecoration(
-                  hintText: 'password',
+            Container(
+               child: Text("Login",style: TextStyle(color: Colors.black,fontSize: 21),),
+            ),
+            Container(
+              margin: EdgeInsets.only(left: 20,right: 20,top: 30),
+              height: 50,
+              child: TextField(
+                controller: username,
+                textAlign: TextAlign.center,
+                decoration: InputDecoration(
+                  hintText: 'username',
                   hintStyle: TextStyle(color: Colors.grey,),
                   focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(25),
@@ -188,51 +165,79 @@ class _MyHomePageState extends State<MyHomePage> {
                       )
                   ),
                   enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(25),
-                      borderSide: BorderSide(
-                          color: Color.fromRGBO(213,229, 241, 1),
-                          width: 1
-                      )
+                    borderRadius: BorderRadius.circular(25),
+                    borderSide: BorderSide(
+                        color: Color.fromRGBO(213,229, 241, 1),
+                      width: 1
+                    )
                   )
+                ),
               ),
             ),
-          ),
-          InkWell(
-            onTap: (){
-                onLogin();
-            },
-            child: Container(
+            Container(
               margin: EdgeInsets.only(left: 20,right: 20,top: 15),
               height: 50,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Color.fromRGBO(255,96, 0, 1),
-                borderRadius: BorderRadius.circular(25),
+              child: TextField(
+                controller: password,
+                textAlign: TextAlign.center,
+                obscureText: true,
+                decoration: InputDecoration(
+                    hintText: 'password',
+                    hintStyle: TextStyle(color: Colors.grey,),
+                    focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(25),
+                        borderSide: BorderSide(
+                            color: Color.fromRGBO(213,229, 241, 1),
+                            width: 1
+                        )
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(25),
+                        borderSide: BorderSide(
+                            color: Color.fromRGBO(213,229, 241, 1),
+                            width: 1
+                        )
+                    )
+                ),
               ),
-              child: Center(child: Text("Login",style: TextStyle(color: Colors.white,fontSize: 21),)),
             ),
-          ),
-          InkWell(
-            onTap: (){
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context)
-                  {return SignUpPage();}),
-                );
-            },
-            child: Container(
-              margin: EdgeInsets.only(left: 20,right: 20,top: 15),
-              height: 50,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Color.fromRGBO(255,96, 0, 1),
-                borderRadius: BorderRadius.circular(25),
+            InkWell(
+              onTap: (){
+                  onLogin();
+              },
+              child: Container(
+                margin: EdgeInsets.only(left: 20,right: 20,top: 15),
+                height: 50,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Color.fromRGBO(255,96, 0, 1),
+                  borderRadius: BorderRadius.circular(25),
+                ),
+                child: Center(child: Text("Login",style: TextStyle(color: Colors.white,fontSize: 21),)),
               ),
-              child: Center(child: Text("Sign Up",style: TextStyle(color: Colors.white,fontSize: 21),)),
             ),
-          )
-        ],
-      )
+            InkWell(
+              onTap: (){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context)
+                    {return SignUpPage();}),
+                  );
+              },
+              child: Container(
+                margin: EdgeInsets.only(left: 20,right: 20,top: 15),
+                height: 50,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Color.fromRGBO(255,96, 0, 1),
+                  borderRadius: BorderRadius.circular(25),
+                ),
+                child: Center(child: Text("Sign Up",style: TextStyle(color: Colors.white,fontSize: 21),)),
+              ),
+            )
+          ],
+        )
+      ),
     );
   }
 }

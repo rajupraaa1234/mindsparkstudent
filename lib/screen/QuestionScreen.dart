@@ -68,7 +68,11 @@ class QuestionPageState extends State<QuestionPage> {
 
   // Question Image
   var QuestionImage = "assets/images/Boy.png";
-  var sadBuddyImage = "assets/images/buddy_happy.png";
+
+  var buddyImage = "assets/images/buddy_happy.png";
+
+  var sadBuddyImage = "assets/images/buddy_sad.png";
+  var happyBuddyImage = "assets/images/buddy_happy.png";
 
   //Sound
   var correctSound = "assets/audio/correct.mp3";
@@ -156,6 +160,7 @@ class QuestionPageState extends State<QuestionPage> {
        optionBColor = Color.fromRGBO(56,168, 223, 10);
        optionCColor = Color.fromRGBO(56,168, 223, 10);
        optionDColor = Color.fromRGBO(56,168, 223, 10);
+       buddyImage = happyBuddyImage;
     });
   }
 
@@ -170,7 +175,6 @@ class QuestionPageState extends State<QuestionPage> {
     }else{
       print("need to download");
       fetchQuestion();
-      updateQuestionList();
     }
   }
   
@@ -250,6 +254,7 @@ class QuestionPageState extends State<QuestionPage> {
         Util.showSnackBar(context, "please give your answer...");
     }else {
         if (index == questionList.length - 1) {
+          saveResultInLocal();
           showDialog(context: context, builder: (BuildContext context) => Util.getCustomDialog(context,topicName),barrierDismissible: false);
           //print("Question end ${result}");
         }
@@ -324,10 +329,11 @@ class QuestionPageState extends State<QuestionPage> {
          }
     });
 
-    Future.delayed(Duration(seconds: 3), () async{
+    Future.delayed(Duration(seconds: 5), () async{
        final String encodedData = MCQ.encode(storelist);
        SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
       sharedPreferences.setString(data.id, encodedData);
+      updateQuestionList();
       setState(() {
         loader =false;
       });
@@ -368,13 +374,22 @@ void fetchQuestion() async {
   }
 
   void optionSelect(String option){
-    setState(() {
-      attempted++;
-    });
     if(isClick ==false) {
+      setState(() {
+        attempted++;
+      });
       String ans = questionList[index].correct;
       String userAns = decodeAns(option);
       bool isCorrect = ans == userAns ? true : false;
+      if(isCorrect){
+         setState(() {
+           buddyImage = happyBuddyImage;
+         });
+      }else{
+         setState(() {
+           buddyImage = sadBuddyImage;
+         });
+      }
       isClick = true;
       if (option == "a") {
         if (isCorrect) {
@@ -725,6 +740,7 @@ void fetchQuestion() async {
   }
 
   void saveResultInLocal() async {
+
     String tdata = DateFormat("hh:mm:ss").format(DateTime.now());
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     sharedPreferences.setInt(AppConstant.attempt, attempted);
@@ -809,7 +825,7 @@ void fetchQuestion() async {
                                   Container(
                                       height: 60,
                                       width: 60,
-                                      child: Image.asset(sadBuddyImage)
+                                      child: Image.asset(buddyImage)
                                   )
                                 ],
                               ),

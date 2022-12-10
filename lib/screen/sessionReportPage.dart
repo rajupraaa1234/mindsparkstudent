@@ -49,12 +49,12 @@ class _ReportPageState extends State<ReportPage> {
   final String topicname;
   _ReportPageState(String this.topicname);
 
-  late String correct;
-  late String wrong;
-  late String skip;
+  late String correct = "0";
+  late String wrong = "0";
+  late String skip = "0";
   late String youdidQuestion = "you did";
-  late String yourscore;
-  late String timeTaken;
+  late String yourscore = "0";
+  late String timeTaken = "00:00:00";
 
   @override
   void initState() {
@@ -77,11 +77,8 @@ class _ReportPageState extends State<ReportPage> {
     });
     String startTime = sharedPreferences.get(AppConstant.startTime) as String;
     String endTime = sharedPreferences.get(AppConstant.endTime) as String;
-    print("start time --> ${startTime}");
-    print("end time --> ${startTime}");
     String diff = Util.diff(startTime, endTime);
 
-    print("diff --> ${diff}");
     setState(() {
       timeTaken = diff;
     });

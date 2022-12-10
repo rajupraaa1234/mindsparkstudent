@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mindsparkstudent/screen/Login.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../Utils/AppConstant.dart';
 import '../Utils/Dailog_helper.dart';
 import '../models/TopicListModal.dart';
 import 'QuestionScreen.dart';
@@ -55,6 +57,16 @@ class _TopicListingPageState extends State<TopicListingPage> {
     // TODO: implement initState
     super.initState();
     fetchTopiclist();
+    getUserDetails();
+  }
+
+  late String username = "username";
+
+  void getUserDetails() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    setState(() {
+      username = sharedPreferences.get(AppConstant.UserName) as String;
+    });
   }
 
   Future<void> fetchTopiclist() async {
@@ -177,7 +189,29 @@ class _TopicListingPageState extends State<TopicListingPage> {
                   child: Align(
                       alignment: FractionalOffset.bottomCenter,
                       child: Container(
-                        child: Image.asset('assets/images/footer.png'),
+                        height: 110,
+                        // width: double.infinity,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage("assets/images/footer.png"),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        child: Container(
+                          child: Row(
+                            children: [
+                              Container(
+                                margin: EdgeInsets.only(left: 30),
+                                height: 80,
+                                child: Image.asset("assets/images/Boy.png"),
+                              ),
+                              Container(
+                                  margin: EdgeInsets.only(left: 20),
+                                  child: Text(username,style: TextStyle(color: Colors.white,fontSize: 22),)
+                              )
+                            ],
+                          ),
+                        ),
                       )
                   ),
                 ),
