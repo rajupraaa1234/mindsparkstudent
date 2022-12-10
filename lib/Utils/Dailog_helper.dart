@@ -20,7 +20,7 @@ class DialogHelper {
         ));
   }
 
-  static Widget loading(){
+  static Widget loading(String msg){
      return Container(
        child: Column(
          children: <Widget>[
@@ -48,9 +48,9 @@ class DialogHelper {
                      margin: const EdgeInsets.only(top: 25.0),
                      child: new Center(
                        child: new Text(
-                         "loading..",
+                         msg,
                          style: new TextStyle(
-                             color: Colors.white
+                             color: Colors.red
                          ),
                        ),
                      ),

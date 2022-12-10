@@ -127,10 +127,7 @@ class QuestionPageState extends State<QuestionPage> {
   @override
   void initState() {
     super.initState();
-    //checkforPermission();
-    //_assetsAudioPlayer = AssetsAudioPlayer.newPlayer();
     downloadQuestion();
-   // updateQuestion();
   }
 
   void playSound(String url) async {
@@ -329,7 +326,7 @@ class QuestionPageState extends State<QuestionPage> {
          }
     });
 
-    Future.delayed(Duration(seconds: 5), () async{
+    Future.delayed(Duration(seconds: 3), () async{
        final String encodedData = MCQ.encode(storelist);
        SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
       sharedPreferences.setString(data.id, encodedData);
@@ -544,7 +541,7 @@ void fetchQuestion() async {
                ),
             ),
             Container(
-              child: loader ?  DialogHelper.loading() : null,
+              child: loader ?  DialogHelper.loading("please wait we are downloading the Question content...") : null,
             ),
             Visibility(
               visible: OptionsAvis,

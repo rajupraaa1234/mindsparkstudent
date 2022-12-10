@@ -53,13 +53,40 @@ class _MyHomePageState extends State<MyHomePage> {
     // TODO: implement initState
     super.initState();
     getUserDetails();
+    downloadQuestion();
   }
-
-
-
   final GlobalKey<ScaffoldState> scafoldKey = new GlobalKey<ScaffoldState>();
 
   late String username = "username";
+  late Icon download = Icon(
+                            Icons.download,
+                            color: Colors.red,
+                            size: 30,
+                       );
+
+
+  void downloadQuestion() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    if(sharedPreferences.get(AppConstant.Topics) != null){
+      setState(() {
+          download = Icon(
+            Icons.check,
+            color: Colors.green,
+            size: 30,
+          );
+      });
+    }else{
+      setState(() {
+        download = Icon(
+          Icons.download,
+          color: Colors.red,
+          size: 30,
+        );
+      });
+    }
+  }
+
+
   void getUserDetails() async {
      SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
      setState(() {
@@ -105,7 +132,7 @@ class _MyHomePageState extends State<MyHomePage> {
                        InkWell(
                          onTap: (){
                            scafoldKey.currentState?.openDrawer();
-                           print('hello menu ');
+                           //print('hello menu ');
                          },
                          child: Container(
                            height: 40,
@@ -143,17 +170,41 @@ class _MyHomePageState extends State<MyHomePage> {
                               image:AssetImage("assets/images/btn.png"),
                               fit:BoxFit.fill
                           )),
-                    child: Center(child: Text("Topics",style: TextStyle(color: Color.fromRGBO(128, 0, 0,3),fontSize: 25,),)),
-                  ),onTap:(){
-                          Navigator.push(
+                    child: Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            child: Center(child: Text("Topics",style: TextStyle(color: Color.fromRGBO(128, 0, 0,3),fontSize: 25,),)),
+                          ),
+                          Container(
+                            margin: EdgeInsets.only(left: 20),
+                            child: download
+                          )
+                        ],
+                      ),
+                    ),
+                  ),onTap:() async {
+                         SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+                         bool down1 = false;
+                         bool down2 = false;
+                         if(sharedPreferences.get(AppConstant.Topic_1) != null){
+                           setState(() {
+                             down1 = true;
+                           });
+                         }
+                         if(sharedPreferences.get(AppConstant.Topic_2) != null){
+                           setState(() {
+                             down2 = true;
+                           });
+                         }
+                        var temp = await Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => TopicListing()),
+                            MaterialPageRoute(builder: (context) => TopicListing(down1:down1,down2:down2)),
                           );
-                        // Navigator.pushReplacement(context,
-                        //     MaterialPageRoute(builder:
-                        //         (context) =>
-                        //             TopicListing()));
-                        //print("you clicked me");
+                        if(temp){
+                          downloadQuestion();
+                        }
                    }),
                Container(
                     child: Expanded(

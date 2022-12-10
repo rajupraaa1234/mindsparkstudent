@@ -12,25 +12,27 @@ import '../Utils/Dailog_helper.dart';
 import '../models/TopicListModal.dart';
 import 'QuestionScreen.dart';
 
-void main() {
-  runApp(const TopicListing());
-}
+// void main() {
+//   runApp(const TopicListing());
+// }
 
 class TopicListing extends StatelessWidget {
-  const TopicListing({super.key});
-
+  const TopicListing({super.key,required bool this.down1,required bool this.down2});
+  final bool down1;
+  final bool down2;
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
 
-    return TopicListingPage(title: 'HomePage sdff ',);
+    return TopicListingPage(title: 'HomePage sdff ', down1: down1,down2: down2,);
   }
 }
 
 class TopicListingPage extends StatefulWidget {
-  const TopicListingPage({super.key, required this.title});
-
+  const TopicListingPage({super.key, required this.title, required this.down1,required this.down2});
+  final bool down1;
+  final bool down2;
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -44,20 +46,73 @@ class TopicListingPage extends StatefulWidget {
   final String title;
 
   @override
-  State<TopicListingPage> createState() => _TopicListingPageState();
+  State<TopicListingPage> createState() => _TopicListingPageState(down1,down2);
 }
 
 class _TopicListingPageState extends State<TopicListingPage> {
-
+  _TopicListingPageState(this.down1,this.down2);
   late List<TopicListModal> topicList = [];
   bool loader = false;
+  final bool down1;
+  final bool down2;
+
+
+  late Icon download1 = Icon(
+    Icons.download,
+    color: Colors.red,
+    size: 30,
+  );
+  late Icon download2 = Icon(
+    Icons.download,
+    color: Colors.red,
+    size: 30,
+  );
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    fetchTopiclist();
     getUserDetails();
+    downloadQuestion();
+    //getallDocument().then(()=>updateUI()).catchError((error)=>print(error));
+    getDownloadStatuc();
+  }
+
+  void getDownloadStatuc()  {
+    print("getDownloadStatuc");
+      //SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+      if(down1){
+            setState(() {
+              download1  = Icon(
+                Icons.check,
+                color: Colors.green,
+                size: 30,
+              );
+            });
+      }
+      if(down2){
+          setState(() {
+            download2  = Icon(
+              Icons.check,
+              color: Colors.green,
+              size: 30,
+            );
+          });
+      }
+  }
+
+  void downloadQuestion() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    if(sharedPreferences.get(AppConstant.Topics) != null){
+      print("no need to download");
+      SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+      setState(() {
+        topicList = TopicListModal.decode(sharedPreferences.get(AppConstant.Topics) as String);
+      });
+    }else{
+      print("need to download");
+      fetchTopiclist();
+    }
   }
 
   late String username = "username";
@@ -69,19 +124,32 @@ class _TopicListingPageState extends State<TopicListingPage> {
     });
   }
 
+  void saveAllTopicsLocal() async {
+    Future.delayed(Duration(microseconds: 500), () async{
+      final String encodedData = TopicListModal.encode(topicList);
+      SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+      sharedPreferences.setString(AppConstant.Topics, encodedData);
+      setState(() {
+        loader =false;
+      });
+    });
+  }
+
+
   Future<void> fetchTopiclist() async {
     setState(() {
       loader =true;
     });
-     final  res = await http.get(Uri.parse('https://rajupraaaa.github.io/Api/topicslist.json'));
-    String responseapi = res.body.toString().replaceAll("\n","");
-    setState(() {
-      topicList.addAll(List<TopicListModal>.from(json.decode(responseapi).map((x) => TopicListModal.fromJson(x))));
-    });
-    setState(() {
-     loader =false;
-     //Navigator.pop(context);
-    });
+    try{
+        final  res = await http.get(Uri.parse('https://rajupraaaa.github.io/Api/topicslist.json'));
+        String responseapi = res.body.toString().replaceAll("\n","");
+        setState(() {
+          topicList.addAll(List<TopicListModal>.from(json.decode(responseapi).map((x) => TopicListModal.fromJson(x))));
+        });
+        saveAllTopicsLocal();
+    }catch(e){
+      print(e.toString());
+    }
   }
 
   void onTopicList(var position){
@@ -92,7 +160,7 @@ class _TopicListingPageState extends State<TopicListingPage> {
     ));
   }
 
-  Widget getListItem(var position){
+  Widget getListItem(var position)  {
     return Container(
       width:200,
       height: 100,
@@ -102,13 +170,27 @@ class _TopicListingPageState extends State<TopicListingPage> {
               image:AssetImage("assets/images/btn.png"),
               fit:BoxFit.fill
           )),
-      child: Center(child: Text(topicList[position].name,style: TextStyle(color: Color.fromRGBO(128, 0, 0,3),fontSize: 25,),)),
-    );
+      child: Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                    Container(
+                          child: Text(topicList[position].name,style: TextStyle(color: Color.fromRGBO(128, 0, 0,3),fontSize: 25,)),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(left:10),
+                      child: position == 0 ? download1 : download2
+                    )
+                ],
+              )
+          ),
+       );
   }
 
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       body: Container(
           height: double.infinity,
@@ -137,7 +219,8 @@ class _TopicListingPageState extends State<TopicListingPage> {
                     children: [
                       InkWell(
                         onTap: (){
-                          Navigator.of(context).maybePop();
+                          Navigator.pop(context, true);
+                          //Navigator.of(context).maybePop(true);
                         },
                         child: Container(
                           height: 40,
@@ -182,7 +265,7 @@ class _TopicListingPageState extends State<TopicListingPage> {
                 ),
               ),
               Container(
-                child: loader ?  DialogHelper.loading() : null,
+                child: loader ?  DialogHelper.loading("Topic list content loading...") : null,
               ),
               Container(
                 child: Expanded(

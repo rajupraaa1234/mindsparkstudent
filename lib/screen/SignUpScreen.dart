@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mindsparkstudent/Utils/Util.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../Utils/AppConstant.dart';
 import '../Utils/DataBase/database_helper.dart';
 import '../models/User.dart';
+import 'HomeScreen.dart';
 
 void main() {
   runApp(const SignUpPage());
@@ -68,6 +71,12 @@ class _MySighUpPageState extends State<MySignUpPage> {
   bool isAvliable = false;
   DatabaseHelper databaseHelper = DatabaseHelper();
 
+  Future<void> setUserNameWithLogin(String username) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    sharedPreferences.setBool(AppConstant.isLogin,true);
+    sharedPreferences.setString(AppConstant.UserName,username);
+  }
+
   Future<void> signup() async {
     String user = username.text.toString();
     String pass = password.text.toString();
@@ -89,8 +98,14 @@ class _MySighUpPageState extends State<MySignUpPage> {
         return;
       }else{
           User Nuser = new User(user, pass);
-          databaseHelper.insertNote(Nuser).then((value) =>
-              Util.showSnackBar(context, "New Credential created successfully ...")
+          databaseHelper.insertNote(Nuser).then((value) => {
+              Util.showSnackBar(context, "New Credential created successfully ..."),
+              setUserNameWithLogin(user),
+              Navigator.pushReplacement(context,
+              MaterialPageRoute(builder:
+                  (context) =>
+                  HomeScreen()))
+           }
           ).catchError((error)=>Util.showSnackBar(context, "Something is wrong ..."));
       }
     }
