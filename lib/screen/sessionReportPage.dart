@@ -141,7 +141,7 @@ class _ReportPageState extends State<ReportPage> {
                         Container(
                           //width: 150,
                             margin: EdgeInsets.only(top: 12),
-                            child: Text(topicname,style: TextStyle(color: Colors.black,fontSize: 22),)
+                            child: Text(topicname,style: TextStyle(color: Colors.black,fontSize: 18),)
                         ),
                         SizedBox(
                           width: 40,

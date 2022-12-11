@@ -75,7 +75,7 @@ class _CustomNavigationDrawerState extends State<CustomNavigationDrawer> {
                             child: Image.asset("assets/images/Boy.png"),
                           ),
                           Container(
-                            margin: EdgeInsets.only(top: 10),
+                            margin: EdgeInsets.only(top: 3),
                             child: Text(username,style: TextStyle(color: Colors.black,fontSize: 22),),
                           )
                         ],

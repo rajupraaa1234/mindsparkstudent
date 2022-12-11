@@ -816,14 +816,14 @@ void fetchQuestion() async {
                           child: Text(topicName,style: TextStyle(color: Colors.black,fontSize: 22),)
                       ),
                       SizedBox(
-                        width: 40,
+                        width: 35,
                       )
                     ],
                   ),
                 ),
               ),
               Container(
-                margin: EdgeInsets.only(top: 15),
+                //margin: EdgeInsets.only(top: 10),
                 child: SizedBox(
                   height: height*0.7,
                   width: width*0.95,
@@ -1113,7 +1113,7 @@ void fetchQuestion() async {
                   //print("on subject click");
                 },
                 child: Container(
-                  margin: EdgeInsets.only(top: 15,right: 15),
+                  margin: EdgeInsets.only(right: 15,top: 8),
                   child: Align(
                       alignment: Alignment.bottomRight,
                       child: Util.getCustomBtnBackground(40,110,Color.fromRGBO(245,101, 35, 2),"Submit",10,20)
