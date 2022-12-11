@@ -134,7 +134,8 @@ class QuestionPageState extends State<QuestionPage> {
     try{
       _assetsAudioPlayer = AssetsAudioPlayer.newPlayer();
       _assetsAudioPlayer!.open(
-        Audio(url),
+        url == correctSound || url == inCorrectSound ? Audio(url) :
+        Audio.file(url),
         autoStart: true,
       );
     }catch(e){
@@ -234,6 +235,9 @@ class QuestionPageState extends State<QuestionPage> {
       optionDText = firstQuestion.mcq_4;
       OptionsDvis = true;
     }
+    if(!firstQuestion.question_inst.isEmpty){
+        onQuestionInstVoiceClick();
+    }
   }
 
   String getApiWithendpoint(){
@@ -247,9 +251,11 @@ class QuestionPageState extends State<QuestionPage> {
   }
 
   void onSubmit(){
+
     if(isClick == false){
         Util.showSnackBar(context, "please give your answer...");
     }else {
+        _assetsAudioPlayer!.stop();
         if (index == questionList.length - 1) {
           saveResultInLocal();
           showDialog(context: context, builder: (BuildContext context) => Util.getCustomDialog(context,topicName),barrierDismissible: false);
@@ -313,20 +319,30 @@ class QuestionPageState extends State<QuestionPage> {
   void saveAllQuestioninLocal() async {
     late List<MCQ> storelist = [];
     questionList.forEach((element) async {
+         late String imgurl = "";
+         late String voiceinstUrl = "";
+         late String voiceQuesUrl = "";
+
          if(!element.question_image.isEmpty){
-             String Imgurl = element.question_image;
-             setState(() async {
-               String imgurl = await startDownloading(Imgurl,"${element.question_seq}.jpg",) as String;
-               storelist.add(new MCQ(element.question_seq, element.question_body,element.question_type, element.question_options, element.mcq_1, element.mcq_2, element.mcq_3, element.mcq_4, element.question_inst, element.question_voice, element.correct, element.question_desc, imgurl));
-             });
-        }else{
-           setState(() {
-             storelist.add(new MCQ(element.question_seq, element.question_body,element.question_type, element.question_options, element.mcq_1, element.mcq_2, element.mcq_3, element.mcq_4, element.question_inst, element.question_voice, element.correct, element.question_desc, ""));
-           });
+                String Imgurl = element.question_image;
+                imgurl = await startDownloading(Imgurl,"${element.question_seq}.jpg",) as String;
+             //  storelist.add(new MCQ(element.question_seq, element.question_body,element.question_type, element.question_options, element.mcq_1, element.mcq_2, element.mcq_3, element.mcq_4, element.question_inst, element.question_voice, element.correct, element.question_desc, imgurl));
+        }
+         if(!element.question_inst.isEmpty){
+             String Imgurl = element.question_inst;
+             voiceinstUrl = await startDownloading(Imgurl,"inst${element.question_seq}.mp3",) as String;
+             print("inst ---> ${voiceinstUrl}");
          }
+         if(!element.question_voice.isEmpty){
+             String Imgurl = element.question_voice;
+             voiceQuesUrl = await startDownloading(Imgurl,"voice${element.question_seq}.mp3",) as String;
+             print("voice ---> ${voiceQuesUrl}");
+         }
+         storelist.add(new MCQ(element.question_seq, element.question_body,element.question_type, element.question_options, element.mcq_1, element.mcq_2, element.mcq_3, element.mcq_4, voiceinstUrl, voiceQuesUrl, element.correct, element.question_desc, imgurl));
+
     });
 
-    Future.delayed(Duration(seconds: 3), () async{
+    Future.delayed(Duration(seconds: 6), () async{
        final String encodedData = MCQ.encode(storelist);
        SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
       sharedPreferences.setString(data.id, encodedData);
@@ -445,11 +461,15 @@ void fetchQuestion() async {
   }
 
   void onQuestionInstVoiceClick(){
-    print("options --> inst");
+      String voiceUrl = questionList[index].question_inst;
+      _assetsAudioPlayer!.stop();
+      playSound(voiceUrl);
   }
 
   void onQuestionDescriptionClick(){
-    print("options --> voice");
+    String voiceUrl = questionList[index].question_voice;
+    _assetsAudioPlayer!.stop();
+    playSound(voiceUrl);
   }
 
   Widget questionItem(){
