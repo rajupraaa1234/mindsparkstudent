@@ -391,6 +391,7 @@ void fetchQuestion() async {
       setState(() {
         attempted++;
       });
+      _assetsAudioPlayer!.stop();
       String ans = questionList[index].correct;
       String userAns = decodeAns(option);
       bool isCorrect = ans == userAns ? true : false;
