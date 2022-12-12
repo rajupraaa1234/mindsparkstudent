@@ -247,8 +247,9 @@ class _TopicListingPageState extends State<TopicListingPage> {
                   ),
                 ),
               ),
-              Expanded(
-                child: Container(
+
+              Container(
+                height: 400,
                   //width: 300,
                   padding: EdgeInsets.only(left: 10,right: 10),
                   child: ListView.builder(
@@ -257,18 +258,17 @@ class _TopicListingPageState extends State<TopicListingPage> {
                           onTap: (){
                             onTopicList(position);
                           },
-                          child: new Flexible(child: getListItem(position))
+                          child: getListItem(position)
                       );
                     },
                     itemCount: topicList.length,
                   ),
                 ),
-              ),
               Container(
                 child: loader ?  DialogHelper.loading("Topic list content loading...") : null,
               ),
-              Container(
-                child: Expanded(
+
+                 Expanded(
                   child: Align(
                       alignment: FractionalOffset.bottomCenter,
                       child: Container(
@@ -298,7 +298,7 @@ class _TopicListingPageState extends State<TopicListingPage> {
                       )
                   ),
                 ),
-              )
+
             ],
           )
       ),

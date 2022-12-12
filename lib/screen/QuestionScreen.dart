@@ -823,7 +823,7 @@ void fetchQuestion() async {
                 ),
               ),
               Container(
-                //margin: EdgeInsets.only(top: 10),
+                margin: EdgeInsets.only(top: 5),
                 child: SizedBox(
                   height: height*0.7,
                   width: width*0.95,
